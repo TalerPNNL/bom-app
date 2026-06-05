@@ -7,6 +7,11 @@ Created on Wed May 27 12:16:40 2026
 
 import streamlit as st
 
+#this is to display the disclaimer page
+def show():
+    st.title("Disclaimer")
+    st.write("...")
+
 st.title("Pacific Northwest National Laboratory Disclaimer")
 st.write("""      
          
