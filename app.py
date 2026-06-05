@@ -13,12 +13,7 @@ st.sidebar.markdown("----", unsafe_allow_html=True)
 #navigation at the bottom
 st.sidebar.markdown("Select a page to navigate to:")
 page=st.sidebar.radio("",["Home","BOM Transformation", "Disclaimer"], index=0)
-
-#this is to display the disclaimer page
-def show():
-    st.title("Disclaimer")
-    st.write("...")
-  
+ 
 #page routing 
 if page=="Home":
     st.title("Bill of Materials to Input‑Output Inventory Converter")
