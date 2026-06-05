@@ -80,6 +80,8 @@ def show():
     st.subheader("Quantified Attribute")
     value_col=st.selectbox("Select numeric value column (weight, quantity, volume, etc.)",options=numeric_columns,)
     unit_col=st.selectbox("Select unit column (optional)", options=["None"]+string_columns,)
+    #this is for if there is an amount column
+    count_col=st.selectbox("Count Column (Optional)", ["None"]+list(df_raw.columns))
     #this is the primary percentage column which is optional
     percent_col=st.selectbox("Percentage Column (Optional)", options=["<Not Present>"] + list(df_raw.columns))    
     #this is the percent range column which is optional
@@ -101,6 +103,10 @@ def show():
     
         # Convert numeric values
         df["Base_Value"] = pd.to_numeric(df["Base_Value"], errors="coerce")
+        
+        if count_col !="None":
+            df["Count"]=pd.to_numeric(df[count_col],errors="coerce").fillna(1)
+        else:df["Count"]=1
     
         # Handle unit column safely
         if unit_col is not None and unit_col in df.columns:
@@ -137,14 +143,16 @@ def show():
         #Compute allocated value
         def compute_allocated(row):
             val = row["Base_Value_Filled"]
+            count=row["Count"]
             if pd.notna(row.get("Percent")):
                 return val * row["Percent"]
             elif pd.notna(row.get("Percent_Lower")):
                 return val * row["Percent_Lower"]
             elif pd.notna(val):
-                return val
+                allocated=val
             else:
                 return 0
+            return allocated*count
     
         df["Allocated_Value"] = df.apply(compute_allocated, axis=1)
     
