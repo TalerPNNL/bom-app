@@ -138,7 +138,7 @@ def show():
             df["Percent_Upper"] = pd.NA  
           
         # Forward-fill numeric values
-        df["Base_Value_Filled"] = df["Base_Value"].fillna(method="ffill")
+        df["Base_Value_Filled"] = df["Base_Value"].ffill()
     
         #Compute allocated value
         def compute_allocated(row):
