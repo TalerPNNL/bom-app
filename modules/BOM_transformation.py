@@ -108,6 +108,7 @@ def show():
         st.subheader("Parsed BOM Preview")
         st.dataframe(df_raw, use_container_width=True)
     #this pulls out the numeric columns
+    st.write(df_raw.dtypes)
     numeric_columns=df_raw.select_dtypes(include=['int64','float64']).columns.tolist()
     string_columns=df_raw.select_dtypes(include=['object']).columns.tolist()
     
