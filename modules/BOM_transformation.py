@@ -44,6 +44,7 @@ def show():
         if uploaded_file.name.lower().endswith(".pdf"):
             st.info("PDF detected, converting to table")
             df_raw=pdf_to_dataframe(uploaded_file)
+            df_preview = pd.DataFrame()
         else:
             st.info("Excel detected, reading sheet.")
             xls=pd.ExcelFile(uploaded_file)
