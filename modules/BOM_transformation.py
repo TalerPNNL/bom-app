@@ -104,7 +104,8 @@ def show():
             df_raw=df_raw.reset_index(drop=True)
             #removes the empty columns
             df_raw=df_raw.replace(r'^\s*$',np.nan, regex=True)
-            df_raw=df_raw.dropna(axis=1,how="all")                       
+            df_raw=df_raw.dropna(axis=1,how="all")  
+            df_raw.columns=[str(c).strip() for c in df_raw.columns]
         st.subheader("Parsed BOM Preview")
         st.dataframe(df_raw, use_container_width=True)
     #this pulls out the numeric columns
@@ -120,6 +121,8 @@ def show():
     st.subheader("Select Required Columns")
     
     #this is the tree level headding
+    df_raw = df_raw.dropna(axis=1, how="all")
+    df_raw.columns = [str(c).strip() for c in df_raw.columns]
     tree_col=st.selectbox("Tree Level Column", options=numeric_columns+string_columns)
     value_col=st.selectbox("Select numeric value column (weight, quantity, volume, etc.)",options=numeric_columns,)
     #these are for the mateiral identification columns, if there are multiple ones they can select them
@@ -144,11 +147,19 @@ def show():
         unit_col=None if unit_col=="None" else unit_col
         # Copy raw data
         df = df_raw.copy()
+        df.columns=[str(c).strip() for c in df.columns]
     
         # Standardize column names
         df = df.rename(columns={tree_col: "Tree_Level"})
+        value_col = value_col.strip()
+
+        if value_col not in df.columns:
+            st.error("Selected value column not found.")
+            st.write("Available columns:", df.columns.tolist())
+            st.stop()
+        
         df = df.rename(columns={value_col: "Base_Value"})
-    
+        
         # Convert numeric values
         df["Base_Value"] = pd.to_numeric(df["Base_Value"], errors="coerce")
         
