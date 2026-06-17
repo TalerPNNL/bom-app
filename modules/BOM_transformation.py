@@ -43,6 +43,9 @@ def show():
         if uploaded_file.name.lower().endswith(".pdf"):
             st.info("PDF detected, converting to table")
             df_raw=pdf_to_dataframe(uploaded_file)
+            #removes the empty columns
+            df_raw=df_raw.replace(r'^\s*$',np.nan, regex=True)
+            df_raw=df_raw.dropna(axis=1,how="all")
             df_preview = pd.DataFrame()
         else:
             st.info("Excel detected, reading sheet.")
@@ -51,6 +54,9 @@ def show():
             if len(sheet_names)==1:
                 st.success(f"One Sheet Detected: {sheet_names[0]}")  
                 df_raw=pd.read_excel(uploaded_file, sheet_name=sheet_names[0], header=None)
+                #removes the empty columns
+                df_raw=df_raw.replace(r'^\s*$',np.nan, regex=True)
+                df_raw=df_raw.dropna(axis=1,how="all")
                 df_preview=df_raw
             else: 
                 st.info(f"{len(sheet_names)} sheets detected in this file.")
@@ -63,6 +69,9 @@ def show():
                 # else:
                 selected_sheet=st.selectbox("Select BOM sheet to analyze", sheet_names,)
                 df_raw=pd.read_excel(uploaded_file,sheet_name=selected_sheet, header=None)
+                #removes the empty columns
+                df_raw=df_raw.replace(r'^\s*$',np.nan, regex=True)
+                df_raw=df_raw.dropna(axis=1,how="all")
                 df_preview=df_raw
                 
         #This allows them to select the headder row if its not first        
@@ -74,9 +83,28 @@ def show():
             suggested_header=(df_preview.notna().sum(axis=1).idxmax())
             header_row=st.selectbox("Header Row",options=list(range(min(20,len(df_preview)))))
             df_raw=df_preview.copy()
-            df_raw.columns=df_raw.iloc[header_row]
+            headers = df_raw.iloc[header_row].tolist()
+
+            clean_headers = []
+            seen = {}
+            for i, h in enumerate(headers):
+                # Handle blanks / NaN
+                if pd.isna(h) or str(h).strip() == "":
+                    h = f"Unnamed_{i}"
+                    h = str(h).strip()
+                # Handle duplicates
+                if h in seen:
+                    seen[h] += 1
+                    h = f"{h}_{seen[h]}"
+                else:
+                    seen[h] = 0           
+                clean_headers.append(h)
+            df_raw.columns = clean_headers
             df_raw=df_raw.iloc[header_row+1:]
             df_raw=df_raw.reset_index(drop=True)
+            #removes the empty columns
+            df_raw=df_raw.replace(r'^\s*$',np.nan, regex=True)
+            df_raw=df_raw.dropna(axis=1,how="all")                       
         st.subheader("Parsed BOM Preview")
         st.dataframe(df_raw, use_container_width=True)
     #this pulls out the numeric columns
