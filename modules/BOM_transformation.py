@@ -108,8 +108,12 @@ def show():
         st.subheader("Parsed BOM Preview")
         st.dataframe(df_raw, use_container_width=True)
     #this pulls out the numeric columns
-    st.write(df_raw.dtypes)
-    numeric_columns=df_raw.select_dtypes(include=['int64','float64']).columns.tolist()
+    
+    numeric_columns=[]
+    for col in df_raw.columns:
+        converted=pd.to_numeric(df_raw[col],errors="coerce")
+        if converted.notna().sum()>0:
+            numeric_columns.append(col)
     string_columns=df_raw.select_dtypes(include=['object']).columns.tolist()
     
     
@@ -117,10 +121,13 @@ def show():
     
     #this is the tree level headding
     tree_col=st.selectbox("Tree Level Column", options=numeric_columns+string_columns)
+    value_col=st.selectbox("Select numeric value column (weight, quantity, volume, etc.)",options=numeric_columns,)
+    #these are for the mateiral identification columns, if there are multiple ones they can select them
+    material_cols=st.multiselect("Material Identification Columns (One or More)", options=string_columns)  
     
     #this is the seleciton of the other variables
     st.subheader("Quantified Attribute")
-    value_col=st.selectbox("Select numeric value column (weight, quantity, volume, etc.)",options=numeric_columns,)
+
     unit_col=st.selectbox("Select unit column (optional)", options=["None"]+string_columns,)
     #this is for if there is an amount column
     count_col=st.selectbox("Count Column (Optional)", ["None"]+list(df_raw.columns))
@@ -128,8 +135,7 @@ def show():
     percent_col=st.selectbox("Percentage Column (Optional)", options=["<Not Present>"] + list(df_raw.columns))    
     #this is the percent range column which is optional
     percent_range_col=st.selectbox("Percentage Range Column (Optional)", options=["<Not Present>"] + list(df_raw.columns))  
-    #these are for the mateiral identification columns, if there are multiple ones they can select them
-    material_cols=st.multiselect("Material Identification Columns (One or More)", options=string_columns)    
+  
     
     # LCI Table (Children aggregated)
     lci_material_col = st.selectbox("Select material identification column for Life Cycle Inventory aggregation",options=material_cols)
