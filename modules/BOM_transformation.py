@@ -70,7 +70,7 @@ def show():
             st.subheader("Select Header Row")
             st.write("Choose the row that contains the column names."
                      "the first 20 rows are shown below for reference")
-            st.dataframe(df_preview.head(20), use_container__width=True)
+            st.dataframe(df_preview.head(20), use_container_width=True)
             suggested_header=(df_preview.notna().sum(axis=1).idxmax())
             header_row=st.selectbox("Header Row",options=list(range(min(20,len(df_preview)))))
             df_raw=df_preview.copy()
