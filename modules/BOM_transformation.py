@@ -50,7 +50,7 @@ def show():
             sheet_names=xls.sheet_names
             if len(sheet_names)==1:
                 st.success(f"One Sheet Detected: {sheet_names[0]}")  
-                df_raw=pd.read_excel(uploaded_file, sheet_name=sheet_names[0])
+                df_raw=pd.read_excel(uploaded_file, sheet_name=sheet_names[0], header=None)
             else: 
                 st.info(f"{len(sheet_names)} sheets detected in this file.")
                 #this can all be added in an updated version of the tool
@@ -61,9 +61,20 @@ def show():
                 #         df_raw[sheet] = pd.read_excel(uploaded_file,sheet_name=sheet)
                 # else:
                 selected_sheet=st.selectbox("Select BOM sheet to analyze", sheet_names,)
-                df_raw=pd.read_excel(uploaded_file,sheet_name=selected_sheet)            
+                df_raw=pd.read_excel(uploaded_file,sheet_name=selected_sheet, header=None) 
                 
-        
+        #This allows them to select the headder row if its not first        
+        if not df_preview.empty:
+            st.subheader("Select Header Row")
+            st.write("Choose the row that contains the column names."
+                     "the first 20 rows are shown below for reference")
+            st.dataframe(df_preview.head(20), use_container__width=True)
+            suggested_header=(df_preview.notna().sum(axis=1).idxmax())
+            header_row=st.selectbox("Header Row",options=list(range(min(20,len(df_preview)))))
+            df_raw=df_preview.copy()
+            df_raw.columns=df_raw.iloc[header_row]
+            df_raw=df_raw.iloc[header_row+1:]
+            df_raw=df_raw.reset_index(drop=True)
         st.subheader("Parsed BOM Preview")
         st.dataframe(df_raw, use_container_width=True)
     #this pulls out the numeric columns
