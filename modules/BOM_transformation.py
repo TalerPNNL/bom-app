@@ -14,7 +14,6 @@ def show():
     
     uploaded_file=st.file_uploader("Upload a Bill of Materials (Excel or PDF)", type=["pdf","xlsx","xls"])
     df_raw=pd.DataFrame()
-    
     #Converts the uploaded PDF BOM into a pandas DataFrame using Tabula
     #Create a temporary file for Tabula, this is not run but a definition which will be run if it determines its a pdf
     def pdf_to_dataframe(uploaded_pdf):
@@ -52,6 +51,7 @@ def show():
             if len(sheet_names)==1:
                 st.success(f"One Sheet Detected: {sheet_names[0]}")  
                 df_raw=pd.read_excel(uploaded_file, sheet_name=sheet_names[0], header=None)
+                df_preview=df_raw
             else: 
                 st.info(f"{len(sheet_names)} sheets detected in this file.")
                 #this can all be added in an updated version of the tool
@@ -62,7 +62,8 @@ def show():
                 #         df_raw[sheet] = pd.read_excel(uploaded_file,sheet_name=sheet)
                 # else:
                 selected_sheet=st.selectbox("Select BOM sheet to analyze", sheet_names,)
-                df_raw=pd.read_excel(uploaded_file,sheet_name=selected_sheet, header=None) 
+                df_raw=pd.read_excel(uploaded_file,sheet_name=selected_sheet, header=None)
+                df_preview=df_raw
                 
         #This allows them to select the headder row if its not first        
         if not df_preview.empty:
