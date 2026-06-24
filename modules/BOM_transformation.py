@@ -263,8 +263,9 @@ def show():
         df_allocated["Is_Child"] = ~df_allocated["Is_Parent"]
                    
         df_children = df_allocated[df_allocated["Is_Child"]].copy()
-        df_lci = (df_children.groupby([lci_material_col, "Unit"], as_index=False).agg({"Allocated_Value": "sum"}))
-        df_lci = df_lci.rename(columns={lci_material_col: "Material", "Allocated_Value": "Total_Value"})
+        group_cols=material_cols+["Unit"]
+        df_lci = (df_children.groupby(group_cols,as_index=False).agg({"Allocated_Value":"sum"}))
+        df_lci=df_lci.rename(columns={"Allocated_Value":"Total_Value"})
     
         # Costing Table (Parents only)
         df_costing = df_allocated[df_allocated["Is_Parent"]].copy()
