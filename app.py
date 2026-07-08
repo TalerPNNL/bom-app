@@ -38,7 +38,8 @@ if page=="Home":
              To use the tool, users upload a PDF or Excel file containing their BOM. After upload, users make a series of selections that are processed internally by the script.
              Upon completion, the tool generates two output tables (inventory and costing) which can be directly uploaded into the inventory templates available on Datahub. """)
     st.write("""**For any questions of inquiries please reach out via**: LCI-template@pnnl.gov      
-             **IR Number:PNNL-SA-222555**""")
+             **IR Number:PNNL-SA-222555**
+            **Citation: Bixler, T., & Hickcox, K. S. (2026, March). Bill of Materials to Input‑Output Inventory Converter [Python Software]. Richland, Washington, U.S.: Pacific Northwest National Laboratory**""")
 elif page=="BOM Transformation":
     import modules.BOM_transformation as BOM_transformation
     BOM_transformation.show()
